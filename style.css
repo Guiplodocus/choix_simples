@@ -74,6 +74,15 @@ h1 {
   margin-top: 28px;
 }
 
+.is-hidden {
+  display: none !important;
+}
+
+.auth-gate,
+.site-content {
+  width: 100%;
+}
+
 .field {
   display: grid;
   gap: 10px;
@@ -88,6 +97,7 @@ h1 {
 
 .date-input,
 .text-input,
+.password-input,
 .select-input {
   width: min(100%, 360px);
   padding: 14px 16px;
@@ -101,6 +111,7 @@ h1 {
 
 .date-input:focus,
 .text-input:focus,
+.password-input:focus,
 .select-input:focus {
   outline: 2px solid rgba(216, 143, 191, 0.4);
   outline-offset: 2px;

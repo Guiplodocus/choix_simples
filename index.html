@@ -12,16 +12,37 @@
   <body>
     <main class="page shell">
       <section class="card hero">
-        <p class="eyebrow">Une petite question</p>
-        <h1>Est-ce que tu veux qu’on se voit ?</h1>
-        <p class="lead">Si tu dis oui, je te laisse choisir quand et où.</p>
+        <div id="authGate" class="auth-gate">
+          <p class="eyebrow">Accès privé</p>
+          <h1>Entre le mot de passe.</h1>
+          <p class="lead">Ce petit site est réservé aux personnes à qui j’ai donné le mot de passe.</p>
 
-        <div class="choices">
-          <button class="choice yes" data-answer="oui" type="button">Oui</button>
-          <button class="choice no" data-answer="non" type="button">Non</button>
+          <form class="stack-form" id="passwordForm">
+            <label class="field" for="passwordInput">
+              Mot de passe
+              <input class="text-input password-input" type="password" id="passwordInput" name="passwordInput" autocomplete="current-password" required />
+            </label>
+
+            <div class="actions">
+              <button class="button" type="submit">Entrer</button>
+            </div>
+          </form>
+
+          <p class="hint" id="passwordHint">Le mot de passe est demandé avant d’afficher la suite.</p>
         </div>
 
-        <p class="hint">Promis, c’est simple, léger et sans pression.</p>
+        <div id="siteContent" class="site-content is-hidden">
+          <p class="eyebrow">Une petite question</p>
+          <h1>Est-ce que tu veux qu’on se voit ?</h1>
+          <p class="lead">Si tu dis oui, je te laisse choisir quand et où.</p>
+
+          <div class="choices">
+            <button class="choice yes" data-answer="oui" type="button">Oui</button>
+            <button class="choice no" data-answer="non" type="button">Non</button>
+          </div>
+
+          <p class="hint">Promis, c’est simple, léger et sans pression.</p>
+        </div>
       </section>
     </main>
 

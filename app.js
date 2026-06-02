@@ -1,3 +1,6 @@
+const ACCESS_KEY = "AccessGranted";
+const ACCESS_PASSWORD = "doudou";
+
 function saveAnswer(answer) {
   sessionStorage.setItem("dragouilleAnswer", answer);
 }
@@ -20,6 +23,74 @@ function saveLocation(locationValue) {
 
 function getLocation() {
   return sessionStorage.getItem("dragouilleLocation");
+}
+
+function isAccessGranted() {
+  return localStorage.getItem(ACCESS_KEY) === "true";
+}
+
+function grantAccess() {
+  localStorage.setItem(ACCESS_KEY, "true");
+}
+
+function getCurrentFileName() {
+  const fileName = window.location.pathname.split("/").pop() || "";
+  return fileName.toLowerCase();
+}
+
+function ensureAccess() {
+  const isIndexPage = getCurrentFileName() === "index.html";
+
+  if (!isAccessGranted()) {
+    if (!isIndexPage) {
+      window.location.replace("index.html");
+    }
+
+    return false;
+  }
+
+  return true;
+}
+
+function initPasswordForm() {
+  const authGate = document.getElementById("authGate");
+  const siteContent = document.getElementById("siteContent");
+  const passwordForm = document.getElementById("passwordForm");
+  const passwordInput = document.getElementById("passwordInput");
+  const passwordHint = document.getElementById("passwordHint");
+
+  if (!authGate || !siteContent || !passwordForm || !passwordInput || !passwordHint) {
+    return;
+  }
+
+  const revealContent = () => {
+    authGate.classList.add("is-hidden");
+    siteContent.classList.remove("is-hidden");
+  };
+
+  if (isAccessGranted()) {
+    revealContent();
+    return;
+  }
+
+  siteContent.classList.add("is-hidden");
+
+  passwordForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    if (passwordInput.value.trim() !== ACCESS_PASSWORD) {
+      passwordHint.textContent = "Mot de passe incorrect. Réessaie.";
+      passwordInput.value = "";
+      passwordInput.focus();
+      return;
+    }
+
+    grantAccess();
+    revealContent();
+    passwordInput.value = "";
+    passwordHint.textContent = "Accès autorisé.";
+    initChoiceButtons();
+  });
 }
 
 function formatDateForDisplay(dateValue) {
@@ -191,6 +262,18 @@ function initChoiceButtons() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  const isIndexPage = getCurrentFileName() === "index.html";
+  const isAllowed = ensureAccess();
+
+  if (!isAllowed) {
+    if (isIndexPage) {
+      initPasswordForm();
+    }
+
+    return;
+  }
+
+  initPasswordForm();
   initChoiceButtons();
   initDateForm();
   initLocationForm();
