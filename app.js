@@ -1,6 +1,19 @@
 const ACCESS_KEY = "AccessGranted";
 const ACCESS_PASSWORD = "doudou";
 const APP_BOOT_KEY = "dragouilleBooted";
+const NO_BUTTON_LABELS = [
+  "Non ?",
+  "Toujours pas :( ?",
+  "Pas aujourd'hui ?",
+  "Tu es sure ?",
+  "je suis triste... :(",
+  "On verra ?",
+  "Peut-être plus tard ?",
+  "Réfléchis encore ?",
+  "bon bah...",
+  ":((",
+];
+let noButtonLabelIndex = 0;
 
 function saveAnswer(answer) {
   sessionStorage.setItem("dragouilleAnswer", answer);
@@ -302,6 +315,10 @@ function initResultSubmitForm() {
 }
 
 function moveNoButton(noButton) {
+  if (noButton.dataset.moveLock === "true") {
+    return;
+  }
+
   const choices = noButton.closest(".choices");
 
   if (!choices) {
@@ -324,10 +341,24 @@ function moveNoButton(noButton) {
     attempts += 1;
   }
 
+  const durationMs = Math.floor(Math.random() * 230) + 320;
+  const tiltDeg = Math.floor(Math.random() * 25) - 12;
+  const scale = (Math.random() * 0.09 + 1.02).toFixed(2);
+  const nextLabel = NO_BUTTON_LABELS[noButtonLabelIndex % NO_BUTTON_LABELS.length];
+  noButtonLabelIndex += 1;
+
   noButton.classList.add("is-moving");
+  noButton.dataset.moveLock = "true";
+  noButton.style.setProperty("--move-duration", `${durationMs}ms`);
+  noButton.style.setProperty("--move-tilt", `${tiltDeg}deg`);
+  noButton.style.setProperty("--move-scale", scale);
   noButton.style.left = `${nextX}px`;
   noButton.style.top = `${nextY}px`;
-  noButton.textContent = "Non ?";
+  noButton.textContent = nextLabel;
+
+  window.setTimeout(() => {
+    noButton.dataset.moveLock = "false";
+  }, durationMs + 40);
 }
 
 function initChoiceForm() {
