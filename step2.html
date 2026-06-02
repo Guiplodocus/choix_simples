@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Où ?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <main class="page shell">
+      <section class="card hero">
+        <p class="eyebrow">Où ?</p>
+        <h1>Choisis le lieu.</h1>
+        <p class="lead">Tu peux proposer un endroit simple et doux.</p>
+
+        <form class="stack-form" id="locationForm">
+          <label class="field" for="locationSelect">
+            Lieu du rendez-vous
+            <select class="select-input" id="locationSelect" name="locationSelect" required>
+              <option value="" selected disabled>Choisis un lieu</option>
+              <option value="chez toi">chez toi</option>
+              <option value="chez moi">chez moi</option>
+              <option value="autre">autre</option>
+            </select>
+          </label>
+
+          <div class="actions">
+            <button class="button" type="submit">Voir le message</button>
+            <a class="link" href="index.html">Revenir au début</a>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

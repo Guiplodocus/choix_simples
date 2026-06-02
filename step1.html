@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Étape suivante</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page shell">
+      <section class="card hero">
+        <p class="eyebrow">Quand ?</p>
+        <h1>Choisis une date.</h1>
+        <p class="lead">Prends un moment qui te plaît, puis on choisira l’endroit.</p>
+
+        <form class="stack-form" id="dateForm">
+          <label class="field" for="dateInput">
+            Date du rendez-vous
+            <input class="date-input" type="date" id="dateInput" name="dateInput" required />
+          </label>
+
+          <div class="actions">
+            <button class="button" type="submit">Continuer</button>
+            <a class="link" href="index.html">Revenir au début</a>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
