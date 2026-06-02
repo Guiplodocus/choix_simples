@@ -38,6 +38,14 @@ function formatDateForDisplay(dateValue) {
   }).format(parsedDate);
 }
 
+function formatDateForInput(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 function renderResult() {
   const answer = getAnswer();
   const chosenDate = getDate();
@@ -77,6 +85,8 @@ function initDateForm() {
     return;
   }
 
+  dateInput.value = formatDateForInput();
+
   dateForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -93,10 +103,25 @@ function initDateForm() {
 function initLocationForm() {
   const locationForm = document.getElementById("locationForm");
   const locationSelect = document.getElementById("locationSelect");
+  const customLocationField = document.getElementById("customLocationField");
+  const customLocationInput = document.getElementById("customLocationInput");
 
-  if (!locationForm || !locationSelect) {
+  if (!locationForm || !locationSelect || !customLocationField || !customLocationInput) {
     return;
   }
+
+  const syncCustomLocationField = () => {
+    const needsCustomLocation = locationSelect.value === "autre";
+    customLocationField.classList.toggle("is-hidden", !needsCustomLocation);
+    customLocationInput.required = needsCustomLocation;
+
+    if (!needsCustomLocation) {
+      customLocationInput.value = "";
+    }
+  };
+
+  locationSelect.addEventListener("change", syncCustomLocationField);
+  syncCustomLocationField();
 
   locationForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -106,7 +131,16 @@ function initLocationForm() {
       return;
     }
 
-    saveLocation(locationSelect.value);
+    if (locationSelect.value === "autre" && !customLocationInput.value.trim()) {
+      customLocationInput.reportValidity();
+      return;
+    }
+
+    const resolvedLocation = locationSelect.value === "autre"
+      ? customLocationInput.value.trim()
+      : locationSelect.value;
+
+    saveLocation(resolvedLocation);
     window.location.href = "result.html";
   });
 }

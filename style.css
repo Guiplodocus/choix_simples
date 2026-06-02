@@ -82,7 +82,12 @@ h1 {
   font-weight: 700;
 }
 
+.field.is-hidden {
+  display: none;
+}
+
 .date-input,
+.text-input,
 .select-input {
   width: min(100%, 360px);
   padding: 14px 16px;
@@ -95,6 +100,7 @@ h1 {
 }
 
 .date-input:focus,
+.text-input:focus,
 .select-input:focus {
   outline: 2px solid rgba(216, 143, 191, 0.4);
   outline-offset: 2px;
@@ -206,6 +212,7 @@ h1 {
   }
 
   .date-input,
+  .text-input,
   .select-input {
     width: 100%;
   }
