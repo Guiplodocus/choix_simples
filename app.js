@@ -58,12 +58,22 @@ function getCurrentFileName() {
   return fileName.toLowerCase();
 }
 
+function getNormalizedPath() {
+  const path = (window.location.pathname || "/").toLowerCase();
+  return path.endsWith("/") && path !== "/" ? path.slice(0, -1) : path;
+}
+
+function isLandingPageRoute() {
+  const path = getNormalizedPath();
+  return path === "/" || path === "/index" || path === "/index.html";
+}
+
 function ensureAccess() {
-  const isIndexPage = getCurrentFileName() === "index.html";
+  const isIndexPage = isLandingPageRoute();
 
   if (!isAccessGranted()) {
     if (!isIndexPage) {
-      window.location.replace("index.html");
+      window.location.replace("/");
     }
 
     return false;
@@ -290,7 +300,7 @@ function initChoiceButtons() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const isIndexPage = getCurrentFileName() === "index.html";
+  const isIndexPage = isLandingPageRoute();
   const isAllowed = ensureAccess();
 
   if (!isAllowed) {
