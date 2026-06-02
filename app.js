@@ -25,6 +25,26 @@ function getLocation() {
   return sessionStorage.getItem("dragouilleLocation");
 }
 
+async function notifyAdmin(payload) {
+  const isHttp = window.location.protocol === "http:" || window.location.protocol === "https:";
+
+  if (!isHttp) {
+    return;
+  }
+
+  try {
+    await fetch("/api/notify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    console.error("Impossible d'envoyer la notification admin.", error);
+  }
+}
+
 function isAccessGranted() {
   return localStorage.getItem(ACCESS_KEY) === "true";
 }
@@ -194,7 +214,7 @@ function initLocationForm() {
   locationSelect.addEventListener("change", syncCustomLocationField);
   syncCustomLocationField();
 
-  locationForm.addEventListener("submit", (event) => {
+  locationForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (!locationSelect.value) {
@@ -212,6 +232,14 @@ function initLocationForm() {
       : locationSelect.value;
 
     saveLocation(resolvedLocation);
+
+    await notifyAdmin({
+      answer: getAnswer() || "",
+      date: getDate() || "",
+      location: resolvedLocation,
+      submittedAt: new Date().toISOString(),
+    });
+
     window.location.href = "result.html";
   });
 }
