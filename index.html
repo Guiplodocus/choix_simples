@@ -14,8 +14,7 @@
       <section class="card hero">
         <div id="authGate" class="auth-gate">
           <p class="eyebrow">Accès privé</p>
-          <h1>Entre le mot de passe.</h1>
-          <p class="lead">Ce petit site est réservé aux personnes à qui j’ai donné le mot de passe.</p>
+          <p class="lead">Ce petit site est privé, le mot de passe est là où on s'est rencontrés.</p>
 
           <form class="stack-form" id="passwordForm">
             <label class="field" for="passwordInput">
@@ -34,14 +33,13 @@
         <div id="siteContent" class="site-content is-hidden">
           <p class="eyebrow">Une petite question</p>
           <h1>Est-ce que tu veux qu’on se voit ?</h1>
-          <p class="lead">Si tu dis oui, je te laisse choisir quand et où.</p>
+          <form class="stack-form" id="choiceForm">
+            <div class="choices">
+              <button class="choice yes" data-answer="oui" name="answer" value="oui" type="submit">Oui</button>
+              <button class="choice no" data-answer="non" name="answer" value="non" type="submit">Non</button>
+            </div>
+          </form>
 
-          <div class="choices">
-            <button class="choice yes" data-answer="oui" type="button">Oui</button>
-            <button class="choice no" data-answer="non" type="button">Non</button>
-          </div>
-
-          <p class="hint">Promis, c’est simple, léger et sans pression.</p>
         </div>
       </section>
     </main>

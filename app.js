@@ -1,5 +1,6 @@
 const ACCESS_KEY = "AccessGranted";
 const ACCESS_PASSWORD = "doudou";
+const APP_BOOT_KEY = "dragouilleBooted";
 
 function saveAnswer(answer) {
   sessionStorage.setItem("dragouilleAnswer", answer);
@@ -29,20 +30,36 @@ async function notifyAdmin(payload) {
   const isHttp = window.location.protocol === "http:" || window.location.protocol === "https:";
 
   if (!isHttp) {
-    return;
+    return false;
   }
 
   try {
-    await fetch("/api/notify", {
+    const response = await fetch("/api/notify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     });
+
+    return response.ok;
   } catch (error) {
     console.error("Impossible d'envoyer la notification admin.", error);
+    return false;
   }
+}
+
+function clearLocalStorageOnFirstLaunch() {
+  if (!isLandingPageRoute()) {
+    return;
+  }
+
+  if (sessionStorage.getItem(APP_BOOT_KEY) === "true") {
+    return;
+  }
+
+  localStorage.clear();
+  sessionStorage.setItem(APP_BOOT_KEY, "true");
 }
 
 function isAccessGranted() {
@@ -64,8 +81,19 @@ function getNormalizedPath() {
 }
 
 function isLandingPageRoute() {
+  const fileName = getCurrentFileName();
   const path = getNormalizedPath();
-  return path === "/" || path === "/index" || path === "/index.html";
+
+  return fileName === "index.html"
+    || fileName === "index"
+    || path === "/"
+    || path.endsWith("/index")
+    || path.endsWith("/index.html");
+}
+
+function getLandingRedirectUrl() {
+  const isFileProtocol = window.location.protocol === "file:";
+  return isFileProtocol ? "./index.html" : "/";
 }
 
 function ensureAccess() {
@@ -73,7 +101,7 @@ function ensureAccess() {
 
   if (!isAccessGranted()) {
     if (!isIndexPage) {
-      window.location.replace("/");
+      window.location.replace(getLandingRedirectUrl());
     }
 
     return false;
@@ -119,7 +147,7 @@ function initPasswordForm() {
     revealContent();
     passwordInput.value = "";
     passwordHint.textContent = "Accès autorisé.";
-    initChoiceButtons();
+    initChoiceForm();
   });
 }
 
@@ -224,7 +252,7 @@ function initLocationForm() {
   locationSelect.addEventListener("change", syncCustomLocationField);
   syncCustomLocationField();
 
-  locationForm.addEventListener("submit", async (event) => {
+  locationForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
     if (!locationSelect.value) {
@@ -243,63 +271,103 @@ function initLocationForm() {
 
     saveLocation(resolvedLocation);
 
-    await notifyAdmin({
-      answer: getAnswer() || "",
-      date: getDate() || "",
-      location: resolvedLocation,
-      submittedAt: new Date().toISOString(),
-    });
-
     window.location.href = "result.html";
   });
 }
 
-function initChoiceButtons() {
-  const buttons = document.querySelectorAll("[data-answer]");
+function initResultSubmitForm() {
+  const resultSubmitForm = document.getElementById("resultSubmitForm");
+  const resultSubmitStatus = document.getElementById("resultSubmitStatus");
+
+  if (!resultSubmitForm || !resultSubmitStatus) {
+    return;
+  }
+
+  resultSubmitForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    resultSubmitStatus.textContent = "Envoi en cours...";
+
+    const sent = await notifyAdmin({
+      answer: getAnswer() || "",
+      date: getDate() || "",
+      location: getLocation() || "",
+      submittedAt: new Date().toISOString(),
+    });
+
+    resultSubmitStatus.textContent = sent
+      ? "C'est envoyé. Confirmation admin enregistrée."
+      : "L'envoi n'a pas abouti. Réessaie dans quelques secondes.";
+  });
+}
+
+function moveNoButton(noButton) {
+  const choices = noButton.closest(".choices");
+
+  if (!choices) {
+    return;
+  }
+
+  const choicesRect = choices.getBoundingClientRect();
+  const buttonRect = noButton.getBoundingClientRect();
+  const maxX = Math.max(32, choicesRect.width - buttonRect.width - 24);
+  const maxY = Math.max(32, Math.max(180, choicesRect.height) - buttonRect.height - 24);
+  const currentLeft = noButton.offsetLeft;
+  const currentTop = noButton.offsetTop;
+  let nextX = currentLeft;
+  let nextY = currentTop;
+  let attempts = 0;
+
+  while (attempts < 12 && Math.abs(nextX - currentLeft) < 80 && Math.abs(nextY - currentTop) < 32) {
+    nextX = Math.floor(Math.random() * maxX) + 12;
+    nextY = Math.floor(Math.random() * maxY) + 12;
+    attempts += 1;
+  }
+
+  noButton.classList.add("is-moving");
+  noButton.style.left = `${nextX}px`;
+  noButton.style.top = `${nextY}px`;
+  noButton.textContent = "Non ?";
+}
+
+function initChoiceForm() {
+  const choiceForm = document.getElementById("choiceForm");
   const noButton = document.querySelector('[data-answer="non"]');
 
-  buttons.forEach((button) => {
-    button.addEventListener("pointerdown", (event) => {
-      if (button.dataset.answer === "non" && noButton) {
-        event.preventDefault();
+  if (!choiceForm) {
+    return;
+  }
 
-        const choices = noButton.closest(".choices");
-
-        if (choices) {
-          const choicesRect = choices.getBoundingClientRect();
-          const buttonRect = noButton.getBoundingClientRect();
-          const maxX = Math.max(32, choicesRect.width - buttonRect.width - 24);
-          const maxY = Math.max(32, Math.max(180, choicesRect.height) - buttonRect.height - 24);
-          const currentLeft = noButton.offsetLeft;
-          const currentTop = noButton.offsetTop;
-          let nextX = currentLeft;
-          let nextY = currentTop;
-          let attempts = 0;
-
-          while (attempts < 12 && Math.abs(nextX - currentLeft) < 80 && Math.abs(nextY - currentTop) < 32) {
-            nextX = Math.floor(Math.random() * maxX) + 12;
-            nextY = Math.floor(Math.random() * maxY) + 12;
-            attempts += 1;
-          }
-
-          noButton.classList.add("is-moving");
-          noButton.style.left = `${nextX}px`;
-          noButton.style.top = `${nextY}px`;
-          noButton.textContent = "Non ?";
-
-          return;
-        }
-
-        return;
-      }
-
-      saveAnswer(button.dataset.answer);
-      window.location.href = "step1.html";
+  if (noButton) {
+    noButton.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      moveNoButton(noButton);
     });
+  }
+
+  choiceForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const clickedButton = event.submitter;
+    const answer = clickedButton?.value || "";
+
+    if (answer === "non") {
+      if (noButton) {
+        moveNoButton(noButton);
+      }
+      return;
+    }
+
+    if (answer === "oui") {
+      saveAnswer("oui");
+      window.location.href = "step1.html";
+    }
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  clearLocalStorageOnFirstLaunch();
+
   const isIndexPage = isLandingPageRoute();
   const isAllowed = ensureAccess();
 
@@ -312,8 +380,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   initPasswordForm();
-  initChoiceButtons();
+  initChoiceForm();
   initDateForm();
   initLocationForm();
+  initResultSubmitForm();
   renderResult();
 });
