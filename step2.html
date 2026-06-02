@@ -17,27 +17,26 @@
       <section class="card hero">
         <p class="eyebrow">Où ?</p>
         <h1>Choisis le lieu.</h1>
-        <p class="lead">Tu peux proposer un endroit simple et doux.</p>
-
         <form class="stack-form" id="locationForm">
           <label class="field" for="locationSelect">
             Lieu du rendez-vous
             <select class="select-input" id="locationSelect" name="locationSelect" required>
               <option value="" selected disabled>Choisis un lieu</option>
-              <option value="chez toi">chez toi</option>
-              <option value="chez moi">chez moi</option>
-              <option value="autre">autre</option>
+              <option value="Chez toi">Chez toi</option>
+              <option value="Chez moi">Chez moi</option>
+              <option value="Autre">Autre</option>
             </select>
           </label>
 
           <label class="field is-hidden" id="customLocationField" for="customLocationInput">
-            Écris le lieu
+            <br />
+            Mais où alors ? 😶
             <input class="text-input" type="text" id="customLocationInput" name="customLocationInput" />
           </label>
 
           <div class="actions">
-            <button class="button" type="submit">Voir le message</button>
-            <a class="link" href="index.html">Revenir au début</a>
+            <button class="button" type="submit">Suivant</button>
+            <a class="link" href="step1.html">Précédent</a>
           </div>
         </form>
       </section>

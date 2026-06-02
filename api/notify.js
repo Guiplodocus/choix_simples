@@ -6,12 +6,14 @@ module.exports = async (req, res) => {
   const payload = req.body || {};
   const answer = String(payload.answer || "").trim();
   const date = String(payload.date || "").trim();
+  const time = String(payload.time || "").trim();
   const location = String(payload.location || "").trim();
   const submittedAt = String(payload.submittedAt || new Date().toISOString()).trim();
 
   console.log("[admin-submit]", {
     answer,
     date,
+    time,
     location,
     submittedAt,
   });
@@ -34,6 +36,7 @@ module.exports = async (req, res) => {
     "Nouvelle reponse recue:",
     `- Reponse: ${answer || "(vide)"}`,
     `- Date: ${date || "(vide)"}`,
+    `- Heure: ${time || "(vide)"}`,
     `- Lieu: ${location || "(vide)"}`,
     `- Envoye le: ${submittedAt}`,
   ].join("\n");

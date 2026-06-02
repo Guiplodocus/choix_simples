@@ -96,6 +96,7 @@ h1 {
 }
 
 .date-input,
+.time-input,
 .text-input,
 .password-input,
 .select-input {
@@ -110,6 +111,7 @@ h1 {
 }
 
 .date-input:focus,
+.time-input:focus,
 .text-input:focus,
 .password-input:focus,
 .select-input:focus {
@@ -226,6 +228,7 @@ h1 {
   }
 
   .date-input,
+  .time-input,
   .text-input,
   .select-input {
     width: 100%;

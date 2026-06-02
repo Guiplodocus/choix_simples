@@ -31,6 +31,14 @@ function getDate() {
   return sessionStorage.getItem("dragouilleDate");
 }
 
+function saveTime(timeValue) {
+  sessionStorage.setItem("dragouilleTime", timeValue);
+}
+
+function getTime() {
+  return sessionStorage.getItem("dragouilleTime");
+}
+
 function saveLocation(locationValue) {
   sessionStorage.setItem("dragouilleLocation", locationValue);
 }
@@ -38,7 +46,7 @@ function saveLocation(locationValue) {
 function getLocation() {
   return sessionStorage.getItem("dragouilleLocation");
 }
-
+//call api
 async function notifyAdmin(payload) {
   const isHttp = window.location.protocol === "http:" || window.location.protocol === "https:";
 
@@ -57,7 +65,7 @@ async function notifyAdmin(payload) {
 
     return response.ok;
   } catch (error) {
-    console.error("Impossible d'envoyer la notification admin.", error);
+    console.error("Impossible d'envoyer le mail, faut que tu me dises par message oops.", error);
     return false;
   }
 }
@@ -191,23 +199,26 @@ function formatDateForInput(date = new Date()) {
 function renderResult() {
   const answer = getAnswer();
   const chosenDate = getDate();
+  const chosenTime = getTime();
   const chosenLocation = getLocation();
   const title = document.getElementById("resultTitle");
   const text = document.getElementById("resultText");
   const answerBox = document.getElementById("resultAnswer");
   const dateBox = document.getElementById("resultDate");
+  const timeBox = document.getElementById("resultTime");
   const locationBox = document.getElementById("resultLocation");
 
-  if (!title || !text || !answerBox || !dateBox || !locationBox) {
+  if (!title || !text || !answerBox || !dateBox || !timeBox || !locationBox) {
     return;
   }
 
   if (answer === "oui") {
-    title.textContent = "Tu as dit oui.";
-    text.textContent = "J’aimerais vraiment t’emmener à un petit date, avec une ambiance douce et simple.";
+    title.textContent = "Tu as dit oui!!";
+    text.textContent = "Ptit résumé d'où on fait ça et quand :";
     answerBox.textContent = "Oui";
     answerBox.style.color = "#d88fbf";
     dateBox.textContent = chosenDate ? formatDateForDisplay(chosenDate) : "Aucune date enregistrée";
+    timeBox.textContent = chosenTime ? chosenTime : "Aucune heure enregistrée";
     locationBox.textContent = chosenLocation ? chosenLocation : "Aucun lieu enregistré";
     return;
   }
@@ -216,28 +227,33 @@ function renderResult() {
   text.textContent = "Retourne à la page de départ pour choisir oui ou non.";
   answerBox.textContent = "Aucune réponse";
   dateBox.textContent = chosenDate ? formatDateForDisplay(chosenDate) : "Aucune date enregistrée";
+  timeBox.textContent = chosenTime ? chosenTime : "Aucune heure enregistrée";
   locationBox.textContent = chosenLocation ? chosenLocation : "Aucun lieu enregistré";
 }
 
 function initDateForm() {
   const dateForm = document.getElementById("dateForm");
   const dateInput = document.getElementById("dateInput");
+  const timeInput = document.getElementById("timeInput");
 
-  if (!dateForm || !dateInput) {
+  if (!dateForm || !dateInput || !timeInput) {
     return;
   }
 
   dateInput.value = formatDateForInput();
+  timeInput.value = "19:00";
 
   dateForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    if (!dateInput.value) {
+    if (!dateInput.value || !timeInput.value) {
       dateInput.reportValidity();
+      timeInput.reportValidity();
       return;
     }
 
     saveDate(dateInput.value);
+    saveTime(timeInput.value);
     window.location.href = "step2.html";
   });
 }
@@ -287,7 +303,7 @@ function initLocationForm() {
     window.location.href = "result.html";
   });
 }
-
+//envoi mail
 function initResultSubmitForm() {
   const resultSubmitForm = document.getElementById("resultSubmitForm");
   const resultSubmitStatus = document.getElementById("resultSubmitStatus");
@@ -304,16 +320,17 @@ function initResultSubmitForm() {
     const sent = await notifyAdmin({
       answer: getAnswer() || "",
       date: getDate() || "",
+      time: getTime() || "",
       location: getLocation() || "",
       submittedAt: new Date().toISOString(),
     });
 
     resultSubmitStatus.textContent = sent
-      ? "C'est envoyé. Confirmation admin enregistrée."
-      : "L'envoi n'a pas abouti. Réessaie dans quelques secondes.";
+      ? "C'est envoyé ! (faut que je regarde mes mails pour voir ça oops)"
+      : "L'envoi est pas parti (faut que tu me dises par message oops)";
   });
 }
-
+// gérer le mouvement et text du non
 function moveNoButton(noButton) {
   if (noButton.dataset.moveLock === "true") {
     return;
@@ -361,6 +378,7 @@ function moveNoButton(noButton) {
   }, durationMs + 40);
 }
 
+// Initialisation des événements et rendu
 function initChoiceForm() {
   const choiceForm = document.getElementById("choiceForm");
   const noButton = document.querySelector('[data-answer="non"]');
@@ -395,7 +413,7 @@ function initChoiceForm() {
     }
   });
 }
-
+// Note: le code de notifyAdmin est dans api/notify.js, mais il est utilisé ici pour envoyer les données au serveur lorsque l'utilisateur soumet le formulaire final.
 document.addEventListener("DOMContentLoaded", () => {
   clearLocalStorageOnFirstLaunch();
 
